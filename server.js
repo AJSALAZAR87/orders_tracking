@@ -1,16 +1,13 @@
 require('dotenv').config();
 const express = require('express');
-const { Client } = require('pg');
 const twilio = require('twilio');
+
+const pool = require('./src/config/database')
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configura la conexión a PostgreSQL
-const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-});
-client.connect()
+pool.connect()
   .then(() => {
     console.log('Connected to PostgreSQL database successfully!');
   })
