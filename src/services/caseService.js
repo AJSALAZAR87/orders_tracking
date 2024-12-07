@@ -13,7 +13,8 @@ const processCSV = async (filePath) => {
     }
     logger.info('All cases have been inserted successfully.');
   } catch(error) {
-    logger.error(`Error in processing CSV: ${error.message}`);
+    const msg = `Error in processing CSV: ${error.message}`
+    logger.error(msg);
     throw error;
   }
 };
@@ -24,7 +25,9 @@ const getAllCases = async () => {
     logger.info('All cases have been retrieved');
     return await caseRepository.getAllCases(); 
   } catch (error) {
-    logger.error(`Error in retrieving cases: ${error.message}`);
+    // const msg = `Error in retrieving cases: ${error.message}`
+    // logger.error(msg);
+    console.log('Error', error)
     throw error;
   }
 };

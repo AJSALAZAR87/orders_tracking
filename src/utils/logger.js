@@ -10,11 +10,13 @@ const logFormat = format.combine(
   format.printf(({ timestamp, level, message }) => `${timestamp} ${level}: ${message}`)
 );
 
+const logLevel = process.env.LOG_LEVEL || 'debug'; // Default to 'debug'
+
 // Create transports for logging
 const transports = [
   // Log to console in development
   new winston.transports.Console({
-    level: 'debug',
+    level: logLevel,
     format: logFormat
   })
 ];
@@ -33,7 +35,8 @@ if (process.env.NODE_ENV === 'production') {
 
 // Create the logger instance
 const logger = winston.createLogger({
-  level: 'debug',  // Minimum level of logging for this app
+  level: logLevel,  // Minimum level of logging for this app
+  format: winston.format.json(),
   transports: transports,
 });
 
