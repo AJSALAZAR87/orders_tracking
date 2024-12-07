@@ -1,4 +1,5 @@
 const pool = require('../config/database');
+const logger = require('../utils/logger');
 
 const getAllCases = async () => {
   try {
@@ -16,12 +17,12 @@ const insertCase = async (caseData) => {
   try {
     logger.debug('Inserting case into the database');
     const query = `
-    INSERT INTO cases (station_id, notification_date, ticket_number, logistics_guide_number, retailer_id, tracking_number, customer_name, customer_address, requirement, courier_name, customer_phone_number, customer_email, customer_postal_code)
+    INSERT INTO cases (hub_id, notification_date, ticket_number, logistics_guide_number, retailer_id, tracking_number, customer_name, customer_address, requirement, courier_id, customer_phone_number, customer_email, customer_postal_code)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`;
     const values = [
-      caseData.stationId, caseData.notification_date, caseData.ticket_number, caseData.logistics_guide_number,
+      caseData.hub_Id, caseData.notification_date, caseData.ticket_number, caseData.logistics_guide_number,
       caseData.retailerId, caseData.tracking_number, caseData.customer_name, caseData.customer_address,
-      caseData.requirement, caseData.courier_name, caseData.customer_phone_number, caseData.customer_email, caseData.customer_postal_code
+      caseData.requirement, caseData.courier_Id, caseData.customer_phone_number, caseData.customer_email, caseData.customer_postal_code
     ];
     const result = await pool.query(query, values);
     logger.info(`Case with ID: ${result.rows[0].id} inserted successfully`);
