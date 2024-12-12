@@ -6,10 +6,17 @@ const { parseCSV } = require('../utils/csvParser');
 const processCSV = async (filePath) => {
   try {
     logger.debug(`Starting CSV processing for file: ${filePath}`);
-    const cases = await parseCSV(filePath);  // You might need a utility function to parse CSV
+    const cases = await parseCSV(filePath);
+    console.log('CSV Parsed:', cases);
     logger.info(`Parsed ${cases.length} cases from CSV file.`);
-    for (const caseData of cases) {
-      await caseRepository.insertCase(caseData);
+    for (const case1 of cases) {
+      if (!case1) {
+        logger.warn('Empty case found, skipping...');
+        continue;  // Skip this iteration if case is empty or undefined
+      }
+      console.log('Case data: ', case1);
+      logger.info('Processing case data:', case1);
+      await caseRepository.insertCase(case1);
     }
     logger.info('All cases have been inserted successfully.');
   } catch(error) {
