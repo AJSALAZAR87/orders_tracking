@@ -1,8 +1,21 @@
 const pool = require('../config/database');
 const logger = require('../utils/logger');
 
-const getAllCases = async () => {
+const getAllCases = async (req) => {
   try {
+    const page = parseInt(req.query.page) || 1;  
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const sort = req.query.sort || 'ASC';
+
+    const countQuery = `
+      SELECT COUNT(*) 
+      FROM cases
+    `;
+    const countResult = await pool.query(countQuery);
+    const totalCases = parseInt(countResult.rows[0].count);
+
     logger.debug('Fetching all cases from the database');
     const query = `
       SELECT 
@@ -35,11 +48,27 @@ const getAllCases = async () => {
       JOIN 
           retailers ON cases.retailer_id = retailers.id
       JOIN 
-          couriers ON cases.courier_id = couriers.id;
+          couriers ON cases.courier_id = couriers.id
+      ORDER BY cases.id ${sort}  -- Sorting direction based on query parameter
+      LIMIT $1 OFFSET $2;
     `;
-    const result = await pool.query(query);
+    const result = await pool.query(query, [limit, offset]);
     logger.info(`Retrieved ${result.rows.length} cases`);
-    return result.rows; 
+    
+    const totalPages = Math.ceil(totalCases / limit);
+    const pagination = {
+      totalItems: totalCases,
+      totalPages: totalPages,
+      currentPage: page,
+      pageSize: limit,
+    };
+
+    const result2 = {
+      data: result.rows,
+      pagination
+    }
+
+    return result2; 
   } catch (error) {
     logger.error(`Database query GETALLCASES failed: ${error.message}`);
     throw error;

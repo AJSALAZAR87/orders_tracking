@@ -27,10 +27,10 @@ const processCSV = async (filePath) => {
 };
 
 // Business logic for fetching all cases
-const getAllCases = async () => {
+const getAllCases = async (req) => {
   try {
     logger.info('All cases have been retrieved');
-    return await caseRepository.getAllCases(); 
+    return await caseRepository.getAllCases(req); 
   } catch (error) {
     // const msg = `Error in retrieving cases: ${error.message}`
     // logger.error(msg);

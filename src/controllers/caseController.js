@@ -15,8 +15,8 @@ exports.uploadCSV = async (req, res) => {
 
 exports.getCases = async (req, res) => {
   try {
-    const cases = await caseService.getAllCases();
-    const formattedCases = cases.map(caseItem => {
+    const cases = await caseService.getAllCases(req);
+    const formattedCases = cases.data.map(caseItem => {
       return {
         caseId: caseItem.case_id,
         notificationDate: caseItem.notification_date,
@@ -46,7 +46,10 @@ exports.getCases = async (req, res) => {
         // Include other case fields as needed
       };
     });
-    res.status(200).json(formattedCases);
+    res.status(200).json({
+      data: formattedCases,
+      pagination: cases.pagination,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
