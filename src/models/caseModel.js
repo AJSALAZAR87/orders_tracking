@@ -4,7 +4,40 @@ const logger = require('../utils/logger');
 const getAllCases = async () => {
   try {
     logger.debug('Fetching all cases from the database');
-    const result = await pool.query('SELECT * FROM cases');
+    const query = `
+      SELECT 
+    cases.id AS case_id,
+    cases.notification_date,
+    cases.ticket_number,
+    cases.logistics_guide_number,
+    cases.retailer_id,
+    cases.hub_id,
+    cases.courier_id,
+    cases.tracking_number,
+    cases.customer_name,
+    cases.customer_address,
+    cases.customer_phone_number,
+    cases.customer_email,
+    cases.customer_postal_code,
+    cases.requirement,
+      -- Only retrieve necessary columns from hub
+      hubs.name AS hub_name, 
+      hubs.location AS hub_location, 
+      -- Only retrieve necessary columns from retailer
+      retailers.name AS retailer_name, 
+      -- Only retrieve necessary columns from courier
+      couriers.name AS courier_name, 
+      couriers.address AS courier_address
+      FROM 
+          cases
+      JOIN 
+          hubs ON cases.hub_id = hubs.id
+      JOIN 
+          retailers ON cases.retailer_id = retailers.id
+      JOIN 
+          couriers ON cases.courier_id = couriers.id;
+    `;
+    const result = await pool.query(query);
     logger.info(`Retrieved ${result.rows.length} cases`);
     return result.rows; 
   } catch (error) {
