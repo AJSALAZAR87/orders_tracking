@@ -15,7 +15,7 @@ exports.uploadCSV = async (req, res) => {
 
 exports.getCases = async (req, res) => {
   try {
-    const cases = await caseService.getAllCases(req);
+    const cases = await caseService.getCases(req);
     const formattedCases = cases.data.map(caseItem => {
       return {
         caseId: caseItem.case_id,
@@ -54,3 +54,26 @@ exports.getCases = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.updateCase = async (req, res) => {
+  const { id } = req.params;
+  const fields = req.body;
+
+  try {
+    const updatedCase = await caseService.updateCase(id, fields);
+    res.status(200).json(updatedCase);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+exports.deleteCase = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedCase = await caseService.deleteCase(id);
+    res.status(200).json({ message: 'Case deleted', case: deletedCase });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}

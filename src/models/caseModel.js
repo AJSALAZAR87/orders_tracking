@@ -5,6 +5,7 @@ const getAllCases = async (req) => {
   try {
     const page = parseInt(req.query.page) || 1;  
     const limit = parseInt(req.query.limit) || 10;
+    if (limit > 100) limit = 100; 
     const offset = (page - 1) * limit;
 
     const sort = req.query.sort || 'ASC';
@@ -124,7 +125,52 @@ const insertCase = async (caseData) => {
   }
 };
 
+const updateCase = async (id, fieldsToUpdate) => {
+  try {
+    // Generar la parte del SET dinámicamente basada en los campos a actualizar
+    const setQuery = Object.keys(fieldsToUpdate)
+      .map((key, index) => `"${key}" = $${index + 1}`)
+      .join(', ');
+
+    const values = Object.values(fieldsToUpdate);
+
+    const query = `UPDATE public.cases
+                   SET ${setQuery}
+                   WHERE id = $${values.length + 1}
+                   RETURNING *`;
+
+    logger.info('update case model:', query);
+
+    const result = await pool.query(query, [...values, id]);
+
+    if (result.rowCount === 0) {
+      throw new Error('Case not found');
+    }
+
+    return result.rows[0]; // Retorna el caso actualizado
+  } catch (err) {
+    throw new Error(`Error updating case: ${err.message}`);
+  }
+}
+
+const deleteCase = async(id) => {
+  try {
+    const query = 'DELETE FROM public.cases WHERE id = $1 RETURNING *';
+    const result = await pool.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      throw new Error('Case not found');
+    }
+
+    return result.rows[0]; // Retorna el caso eliminado
+  } catch (err) {
+    throw new Error(`Error deleting case: ${err.message}`);
+  }
+}
+
 module.exports = {
   getAllCases,
   insertCase,
+  updateCase,
+  deleteCase
 };

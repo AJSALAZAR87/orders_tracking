@@ -16,7 +16,7 @@ const processCSV = async (filePath) => {
       }
       console.log('Case data: ', case1);
       logger.info('Processing case data:', case1);
-      await caseRepository.insertCase(case1);
+      await caseRepository.insertCaseRepository(case1);
     }
     logger.info('All cases have been inserted successfully.');
   } catch(error) {
@@ -27,10 +27,10 @@ const processCSV = async (filePath) => {
 };
 
 // Business logic for fetching all cases
-const getAllCases = async (req) => {
+const getCases = async (req) => {
   try {
     logger.info('All cases have been retrieved');
-    return await caseRepository.getAllCases(req); 
+    return await caseRepository.getCasesRepository(req); 
   } catch (error) {
     // const msg = `Error in retrieving cases: ${error.message}`
     // logger.error(msg);
@@ -39,7 +39,27 @@ const getAllCases = async (req) => {
   }
 };
 
+const updateCase = async (id, fields) => {
+  try {
+    const updatedCase = await caseRepository.updateCaseRepository(id, fields);
+    return updatedCase;
+  } catch (err) {
+    throw new Error(`Error in service: ${err.message}`);
+  }
+}
+
+const deleteCase = async(id) => {
+  try {
+    const deletedCase = await caseRepository.deleteCaseRepository(id);
+    return deletedCase;
+  } catch (err) {
+    throw new Error(`Error in service: ${err.message}`);
+  }
+}
+
 module.exports = {
   processCSV,
-  getAllCases,
+  getCases,
+  updateCase,
+  deleteCase,
 };

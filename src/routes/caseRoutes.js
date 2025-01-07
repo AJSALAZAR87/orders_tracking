@@ -3,12 +3,18 @@ const caseController = require('../controllers/caseController');
 const validateCSV = require('../middlewares/validateCSV');
 const router = express.Router();
 
-//CSV parser
-router.post('/upload-csv', validateCSV, caseController.uploadCSV);
+//CASES MODEL
 
-
-//Cases
+//GET
 router.get('/cases', caseController.getCases);
 
+//POST
+router.post('/upload-csv', validateCSV, caseController.uploadCSV);
+
+//PUT
+router.patch('/cases/:id', caseController.updateCase);
+
+//DELETE
+router.delete('/cases/:id', caseController.deleteCase);
 
 module.exports = router;

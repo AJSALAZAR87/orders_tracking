@@ -1,14 +1,26 @@
 const caseModel = require('../models/caseModel');
 
-const getAllCases = async (req) => {
+const getCasesRepository = async (req) => {
   return await caseModel.getAllCases(req);
 };
 
-const insertCase = async (caseData) => {
+const insertCaseRepository = async (caseData) => {
   return await caseModel.insertCase(caseData);
 };
 
+const updateCaseRepository = async (id, fieldsToUpdate) => {
+  return await caseModel.updateCase(id, fieldsToUpdate);
+}
+
+const deleteCaseRepository = async (id) => {
+  return await caseModel.deleteCase(id);
+}
+
+
+
 module.exports = {
-  getAllCases,
-  insertCase,
+  getCasesRepository,
+  insertCaseRepository,
+  updateCaseRepository,
+  deleteCaseRepository
 };
