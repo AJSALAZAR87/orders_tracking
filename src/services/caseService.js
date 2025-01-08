@@ -2,16 +2,34 @@ const caseRepository = require('../repositories/caseRepository');
 const logger = require('../utils/logger');
 const { parseCSV } = require('../utils/csvParser');
 
-// Business logic for processing CSV files
 const processCSV = async (filePath) => {
+  let insertedCount = 0;
   try {
     logger.debug(`Starting CSV processing for file: ${filePath}`);
-    const cases = await parseCSV(filePath);  // You might need a utility function to parse CSV
+    const cases = await parseCSV(filePath);
+    console.log('CSV Parsed:', cases);
     logger.info(`Parsed ${cases.length} cases from CSV file.`);
-    for (const caseData of cases) {
-      await caseRepository.insertCase(caseData);
+    for (const case1 of cases) {
+      if (!case1) {
+        logger.warn('Empty case found, skipping...');
+        continue; 
+      }
+      console.log('Case data: ', case1);
+      logger.info('Processing case data:', case1);
+
+      try {
+        const isInserted = await caseRepository.insertCaseRepository(case1);
+        if (isInserted) {
+          insertedCount++;
+        } 
+      } catch (err) {
+        logger.error(`Error inserting case with ticket number ${case1.ticket_number}: ${err.message}`);
+        continue;
+      }
+
     }
     logger.info('All cases have been inserted successfully.');
+    return insertedCount;
   } catch(error) {
     const msg = `Error in processing CSV: ${error.message}`
     logger.error(msg);
@@ -19,11 +37,11 @@ const processCSV = async (filePath) => {
   }
 };
 
-// Business logic for fetching all cases
-const getAllCases = async () => {
+
+const getCases = async (req) => {
   try {
     logger.info('All cases have been retrieved');
-    return await caseRepository.getAllCases(); 
+    return await caseRepository.getCasesRepository(req); 
   } catch (error) {
     // const msg = `Error in retrieving cases: ${error.message}`
     // logger.error(msg);
@@ -32,7 +50,27 @@ const getAllCases = async () => {
   }
 };
 
+const updateCase = async (id, fields) => {
+  try {
+    const updatedCase = await caseRepository.updateCaseRepository(id, fields);
+    return updatedCase;
+  } catch (err) {
+    throw new Error(`Error in service: ${err.message}`);
+  }
+}
+
+const deleteCase = async(id) => {
+  try {
+    const deletedCase = await caseRepository.deleteCaseRepository(id);
+    return deletedCase;
+  } catch (err) {
+    throw new Error(`Error in service: ${err.message}`);
+  }
+}
+
 module.exports = {
   processCSV,
-  getAllCases,
+  getCases,
+  updateCase,
+  deleteCase,
 };
