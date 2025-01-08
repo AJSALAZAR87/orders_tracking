@@ -2,8 +2,8 @@ const caseRepository = require('../repositories/caseRepository');
 const logger = require('../utils/logger');
 const { parseCSV } = require('../utils/csvParser');
 
-// Business logic for processing CSV files
 const processCSV = async (filePath) => {
+  let insertedCount = 0;
   try {
     logger.debug(`Starting CSV processing for file: ${filePath}`);
     const cases = await parseCSV(filePath);
@@ -12,13 +12,24 @@ const processCSV = async (filePath) => {
     for (const case1 of cases) {
       if (!case1) {
         logger.warn('Empty case found, skipping...');
-        continue;  // Skip this iteration if case is empty or undefined
+        continue; 
       }
       console.log('Case data: ', case1);
       logger.info('Processing case data:', case1);
-      await caseRepository.insertCaseRepository(case1);
+
+      try {
+        const isInserted = await caseRepository.insertCaseRepository(case1);
+        if (isInserted) {
+          insertedCount++;
+        } 
+      } catch (err) {
+        logger.error(`Error inserting case with ticket number ${case1.ticket_number}: ${err.message}`);
+        continue;
+      }
+
     }
     logger.info('All cases have been inserted successfully.');
+    return insertedCount;
   } catch(error) {
     const msg = `Error in processing CSV: ${error.message}`
     logger.error(msg);
@@ -26,7 +37,7 @@ const processCSV = async (filePath) => {
   }
 };
 
-// Business logic for fetching all cases
+
 const getCases = async (req) => {
   try {
     logger.info('All cases have been retrieved');

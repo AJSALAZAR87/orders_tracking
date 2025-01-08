@@ -4,8 +4,8 @@ const logger = require('../utils/logger');
 exports.uploadCSV = async (req, res) => {
   try {
     logger.info('Received CSV file upload request');
-    await caseService.processCSV(req.file.path);
-    res.status(200).json({ message: 'CSV processed successfully' });
+    const insertedCount = await caseService.processCSV(req.file.path);
+    res.status(200).json({ message: 'CSV processed successfully', insertedCount });
     logger.info('CSV processed successfully');
   } catch (error) {
     logger.error(`Error processing CSV: ${error.message}`);
@@ -43,7 +43,7 @@ exports.getCases = async (req, res) => {
           name: caseItem.courier_name,
           address: caseItem.courier_address,
         },
-        // Include other case fields as needed
+        
       };
     });
     res.status(200).json({
