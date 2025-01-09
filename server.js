@@ -1,7 +1,7 @@
 const express = require('express');
 const twilio = require('twilio');
 const logger = require('./src/utils/logger')
-const caseRoutes = require('./src/routes/caseRoutes');
+const routes = require('./src/routes/routes');
 const logRequest = require('./src/middlewares/logRequest');
 const dotenv = require('dotenv');
 
@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 // Global request logging
 app.use(logRequest);
 app.use(express.json());  // To parse JSON bodies
-app.use('/api', caseRoutes);  // Use routes defined in caseRoutes
+app.use('/api', routes);  // Use routes defined in caseRoutes
 
 app.listen(port, () => {
   const message = `Server is running on http://localhost:${port}`;
@@ -35,6 +35,5 @@ app.listen(port, () => {
   // Using winston's log method with a level and message
   logger.info(message);
 
-  // Also logging to console
   console.log(message);
 });
