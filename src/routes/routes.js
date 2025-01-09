@@ -18,7 +18,7 @@ router.delete('/cases/:id', caseController.deleteCase);
 //GET
 router.get('/messages', messagesController.getAllMessages);
 //GET BY ID
-router.get('/messages/:caseId', messagesController.getMessagesByCaseId); 
+router.get('/messages/:id', messagesController.getMessagesById); 
 //POST
 router.post('/messages', messagesController.createMessage);
 //PUT

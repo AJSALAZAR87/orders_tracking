@@ -21,6 +21,16 @@ const getMessagesByCaseId = async (caseId) => {
   }
 }
 
+const getMessagesById = async (caseId) => {
+  try {
+    const messages = await messagesRepository.getMessagesById(caseId);
+    return messages;
+  } catch (err) {
+    logger.error(`Error in service getMessagesById: ${err.message}`);
+    throw new Error(`Error in service: ${err.message}`);
+  }
+}
+
 const createMessage = async (messageData) => {
   try {
     const newMessage = await messagesRepository.createMessage(messageData);
@@ -57,4 +67,5 @@ module.exports = {
   createMessage,
   updateMessage,
   deleteMessage,
+  getMessagesById
 };
