@@ -127,8 +127,6 @@ const updateMessage = async (messageId, updatedData) => {
                    WHERE id = $${values.length + 1}
                    RETURNING *`;
     
-    console.log('Queries y valores', setQuery, 'valores: ' ,values, query, 'ID', messageId)
-
     logger.info('update Message QUERY:', query);
 
     const result = await pool.query(query, [...values, messageId]);
