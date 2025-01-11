@@ -33,7 +33,7 @@ const processCSV = async (filePath) => {
   } catch(error) {
     const msg = `Error in processing CSV: ${error.message}`
     logger.error(msg);
-    throw error;
+    throw new Error(`Error in caseservice: ${err.message}`);
   }
 };
 
@@ -55,7 +55,7 @@ const updateCase = async (id, fields) => {
     const updatedCase = await caseRepository.updateCaseRepository(id, fields);
     return updatedCase;
   } catch (err) {
-    throw new Error(`Error in service: ${err.message}`);
+    throw new Error(`Error in caseservice: ${err.message}`);
   }
 }
 
@@ -64,7 +64,7 @@ const deleteCase = async(id) => {
     const deletedCase = await caseRepository.deleteCaseRepository(id);
     return deletedCase;
   } catch (err) {
-    throw new Error(`Error in service: ${err.message}`);
+    throw new Error(`Error in caseservice: ${err.message}`);
   }
 }
 
