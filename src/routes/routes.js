@@ -5,6 +5,7 @@ const caseController = require('../controllers/caseController');
 const messagesController = require('../controllers/messagesController');
 const authController = require('../controllers/authController');
 const validateCSV = require('../middlewares/validateCSV');
+const { authenticate } = require('../middlewares/auth')
 
 //AUTH ROUTES
 //LOGIN
@@ -20,29 +21,29 @@ router.post('/login', [
   body('password').notEmpty().withMessage('Password is required'),
 ], authController.login);
 //UPDATE USER
-router.put('/users/:userId', authController.updateUser)
+router.put('/users/:userId', authenticate, authController.updateUser)
 
 //CASES ROUTES
 //GET
-router.get('/cases', caseController.getCases);
+router.get('/cases', authenticate, caseController.getCases);
 //POST
-router.post('/upload-csv', validateCSV, caseController.uploadCSV);
+router.post('/upload-csv', authenticate, validateCSV, caseController.uploadCSV);
 //PATCH
-router.patch('/cases/:id', caseController.updateCase);
+router.patch('/cases/:id', authenticate, caseController.updateCase);
 //DELETE
-router.delete('/cases/:id', caseController.deleteCase);
+router.delete('/cases/:id', authenticate, caseController.deleteCase);
 
 //MESSAGES ROUTES
 //GET
-router.get('/messages', messagesController.getAllMessages);
+router.get('/messages', authenticate, messagesController.getAllMessages);
 //GET BY ID
-router.get('/messages/:id', messagesController.getMessagesById); 
+router.get('/messages/:id', authenticate, messagesController.getMessagesById); 
 //POST
-router.post('/messages', messagesController.createMessage);
+router.post('/messages', authenticate, messagesController.createMessage);
 //PUT
-router.put('/messages/:messageId', messagesController.updateMessage);
+router.put('/messages/:messageId', authenticate, messagesController.updateMessage);
 //DELETE
-router.delete('/messages/:messageId', messagesController.deleteMessage);
+router.delete('/messages/:messageId', authenticate, messagesController.deleteMessage);
 
 
 module.exports = router;

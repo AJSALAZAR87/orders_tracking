@@ -3,7 +3,6 @@ const logger = require('../utils/logger');
 
 const insertUser = async (data) => {
   try {
-    console.log('Datos usuario:', data);
     const query = `INSERT INTO public.users (name, last_name, email, password) 
     VALUES ($1, $2, $3, $4)
     RETURNING *`;
@@ -21,7 +20,6 @@ const findByEmail = async (email) => {
     const query = 'SELECT * FROM public.users WHERE email = $1';
     const values = [email];
     const result = await pool.query(query, values);
-    console.log('Result: ', result)
     return result.rows[0]; 
   } catch (error) {
     logger.error(`Database query findByEmail failed: ${error.message}`);

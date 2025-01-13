@@ -38,7 +38,6 @@ const login = async (email, password) => {
   try {
     // Check if user exists
     const user = await usersRepository.findByEmailRepository(email);
-    console.log('User retrieved: ', user)
     if (!user) {
         throw new Error('User not found');
     }
