@@ -26,20 +26,53 @@ const login = async (req, res) => {
   }
 }
 
+const refreshToken = async (req, res) => {
+  try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) return res.status(400).json({ error: 'Refresh token is required' });
+
+      const result = await authService.refreshToken(refreshToken);
+      res.status(200).json(result);
+  } catch (err) {
+      res.status(400).json({ error: err.message });
+  }
+};
+
 const updateUser = async (req, res) => {
   const { userId } = req.params;
   const user = req.body;
   try {
     const updatedUser = await authService.updateUser(userId, user);
-    res.status(200).json(updatedUser);
+    res.status(201).json(updatedUser);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+}
 
+const getUsers = async(req, res) => {
+  try {
+    const users = await authService.getUsers(req);
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+const getUserById = async(req, res) => {
+  const { userId } = req.params;
+  try {
+    const users = await authService.getUserById(userId);
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 }
 
 module.exports = {
   signUp,
   login,
-  updateUser
+  refreshToken,
+  updateUser,
+  getUsers,
+  getUserById
 }
