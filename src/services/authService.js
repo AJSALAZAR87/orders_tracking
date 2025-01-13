@@ -38,8 +38,9 @@ const login = async (email, password) => {
   try {
     // Check if user exists
     const user = await usersRepository.findByEmailRepository(email);
+    console.log('User retrieved: ', user)
     if (!user) {
-        throw new Error('Invalid credentials');
+        throw new Error('User not found');
     }
 
     // Password verification
@@ -58,7 +59,14 @@ const login = async (email, password) => {
 
 const updateUser = async (id, fields) => {
   try {
-    const updatedCase = await usersRepository.updateUserRepository(id, fields);
+    let updatedCase;
+    if ('password' in fields){
+      const { password, ...rest } = fields;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updatedCase = await usersRepository.updateUserRepository(id, { ...rest, password: hashedPassword} );
+    } else{
+      updatedCase = await usersRepository.updateUserRepository(id, fields );
+    }
     return updatedCase;
   } catch (err) {
     throw new Error(`Error in Authservice: ${err.message}`);
