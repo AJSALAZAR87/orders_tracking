@@ -26,8 +26,13 @@ const signUp = async (userData) => {
     });
 
     // Token generation
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    return { user, token };
+    const token = jwt.sign(
+      { id: user.id, email: user.email }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '24h' }
+    );
+
+    return { user, token, refreshToken };
   } catch (err) {
     throw new Error(`Error in authService: ${err.message}`);
   }
@@ -49,10 +54,46 @@ const login = async (email, password) => {
     }
 
     // Token Generation
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    return { user: { id: user.id, name: user.name, email: user.email }, token };
+    const token = jwt.sign(
+      { id: user.id, 
+        email: user.email 
+      }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '24h' }
+    );
+
+    // Refresh token generation
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    return { user: { id: user.id, name: user.name, email: user.email }, token, refreshToken };
   } catch (err) {
     throw new Error(`Error in authService: ${err.message}`);
+  }
+};
+
+const refreshToken = async (token) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const existingUser = await usersRepository.findByEmailRepository(decoded.email);
+    if (!existingUser) {
+        throw new Error('Email not in registered in the system');
+    }
+    const newAccessToken = jwt.sign(
+        { id: existingUser.id, email:existingUser.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+    );
+
+    return { accessToken: newAccessToken };
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      throw new Error('Refresh token expired, please log in again');
+    }
+    throw new Error(`Invalid or expired refresh token: ${err.message}`);
   }
 };
 
@@ -72,8 +113,29 @@ const updateUser = async (id, fields) => {
   }
 }
 
+const getUsers = async (req) => {
+  try {
+    logger.info('All users have been retrieved');
+    return await usersRepository.getUsersRepository(req); 
+  } catch (error) {
+    throw new Error(`Error in getUsers Authservice: ${error.message}`);
+  }
+}
+
+const getUserById = async (id) => {
+  try {
+    logger.info('User has been retrieved');
+    return await usersRepository.getUserByIdRepository(id); 
+  } catch (error) {
+    throw new Error(`Error in getUserById Authservice: ${error.message}`);
+  }
+}
+
 module.exports = {
   login,
   signUp,
   updateUser,
+  refreshToken,
+  getUsers,
+  getUserById,
 }

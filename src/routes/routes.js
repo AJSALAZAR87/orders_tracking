@@ -20,8 +20,16 @@ router.post('/login', [
   body('email').isEmail().withMessage('Invalid email'),
   body('password').notEmpty().withMessage('Password is required'),
 ], authController.login);
+//REFRESH TOKEN
+router.post('/refresh-token', [
+  body('refreshToken').notEmpty().withMessage('Refresh token is required'),
+], authController.refreshToken);
 //UPDATE USER
-router.put('/users/:userId', authenticate, authController.updateUser)
+router.put('/users/:userId', authenticate, authController.updateUser);
+//GET USERS
+router.get('/users', authenticate, authController.getUsers);
+//GET USER BY ID
+router.get('/users/:userId', authenticate, authController.getUserById);
 
 //CASES ROUTES
 //GET
