@@ -36,15 +36,15 @@ const getAllCases = async (req) => {
     cases.customer_postal_code,
     cases.requirement,
     cases.status,
-      -- Only retrieve necessary columns from hub
-      hubs.name AS hub_name, 
-      hubs.location AS hub_location, 
-      -- Only retrieve necessary columns from retailer
-      retailers.name AS retailer_name, 
-      -- Only retrieve necessary columns from courier
-      couriers.name AS courier_name, 
-      couriers.address AS courier_address,
-      couriers.phone_number AS courier_phone_number
+    -- Only retrieve necessary columns from hub
+    hubs.name AS hub_name, 
+    hubs.address AS hubs_address, 
+    -- Only retrieve necessary columns from retailer
+    retailers.name AS retailer_name, 
+    -- Only retrieve necessary columns from courier
+    couriers.name AS courier_name, 
+    couriers.address AS courier_address,
+    couriers.phone_number AS courier_phone_number
       FROM 
           cases
       JOIN 
@@ -85,7 +85,7 @@ const insertCase = async (caseData) => {
     console.log('Station name2: ', caseData)
     const stationResult = await pool.query(
       'INSERT INTO hubs (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
-      [caseData.station_name]
+      [caseData.station_name.toUpperCase()]
     );
     console.log('Station results: ', stationResult);
     const stationId = stationResult.rows.length > 0 ? stationResult.rows[0].id : null;
@@ -94,7 +94,7 @@ const insertCase = async (caseData) => {
     }
     const retailerResult = await pool.query(
         'INSERT INTO retailers (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
-        [caseData.retailer_name]
+        [caseData.retailer_name.toUpperCase()]
     );
     console.log('Retailer result: ', retailerResult);
     const retailerId = retailerResult.rows.length > 0 ? retailerResult.rows[0].id : null;
@@ -103,7 +103,7 @@ const insertCase = async (caseData) => {
     }
     const courierResult = await pool.query(
       'INSERT INTO couriers (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id;',
-      [caseData.courier_name]
+      [caseData.courier_name.toUpperCase()]
     );
     // console.log('Courier result: ', courierId);
     const courierId = courierResult.rows.length > 0 ? courierResult.rows[0].id : null;

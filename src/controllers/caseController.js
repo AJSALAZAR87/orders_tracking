@@ -40,7 +40,7 @@ exports.getCases = async (req, res) => {
         hub: {
           id: caseItem.hub_id,
           name: caseItem.hub_name,
-          location: caseItem.hub_location,
+          address: caseItem.address,
         },
         courier: {
           id: caseItem.courier_id,
