@@ -6,6 +6,7 @@ const messagesController = require('../controllers/messagesController');
 const authController = require('../controllers/authController');
 const courierController = require('../controllers/courierController');
 const retailerController = require('../controllers/retailerController');
+const hubController = require('../controllers/hubController');
 const validateCSV = require('../middlewares/validateCSV');
 const { authenticate } = require('../middlewares/auth')
 
@@ -79,5 +80,17 @@ router.post('/retailers', authenticate, retailerController.insertRetailer);
 router.put('/retailers/:id', authenticate, retailerController.updateRetailer);
 //DELETE
 router.delete('/retailers/:id', authenticate, retailerController.deleteRetailer);
+
+//HUBS ROUTES
+//GET
+router.get('/hubs', authenticate, hubController.getAllHubs);
+//GET BY ID
+router.get('/hubs/:id', authenticate, hubController.getHubsById); 
+//POST
+router.post('/hubs', authenticate, hubController.insertHub);
+//PUT
+router.put('/hubs/:id', authenticate, hubController.updateHub);
+//DELETE
+router.delete('/hubs/:id', authenticate, hubController.deleteHub);
 
 module.exports = router;
