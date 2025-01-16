@@ -4,7 +4,8 @@ const router = express.Router();
 const caseController = require('../controllers/caseController');
 const messagesController = require('../controllers/messagesController');
 const authController = require('../controllers/authController');
-const courierController = require('../controllers/courierController')
+const courierController = require('../controllers/courierController');
+const retailerController = require('../controllers/retailerController');
 const validateCSV = require('../middlewares/validateCSV');
 const { authenticate } = require('../middlewares/auth')
 
@@ -66,5 +67,17 @@ router.post('/couriers', authenticate, courierController.insertCourier);
 router.put('/couriers/:id', authenticate, courierController.updateCourier);
 //DELETE
 router.delete('/couriers/:id', authenticate, courierController.deleteCourier);
+
+//RETAILERS ROUTES
+//GET
+router.get('/retailers', authenticate, retailerController.getAllRetailers);
+//GET BY ID
+router.get('/retailers/:id', authenticate, retailerController.getRetailersById); 
+//POST
+router.post('/retailers', authenticate, retailerController.insertRetailer);
+//PUT
+router.put('/retailers/:id', authenticate, retailerController.updateRetailer);
+//DELETE
+router.delete('/retailers/:id', authenticate, retailerController.deleteRetailer);
 
 module.exports = router;
