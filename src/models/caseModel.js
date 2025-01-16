@@ -35,6 +35,7 @@ const getAllCases = async (req) => {
     cases.customer_email,
     cases.customer_postal_code,
     cases.requirement,
+    cases.status,
       -- Only retrieve necessary columns from hub
       hubs.name AS hub_name, 
       hubs.location AS hub_location, 
@@ -42,7 +43,8 @@ const getAllCases = async (req) => {
       retailers.name AS retailer_name, 
       -- Only retrieve necessary columns from courier
       couriers.name AS courier_name, 
-      couriers.address AS courier_address
+      couriers.address AS courier_address,
+      couriers.phone_number AS courier_phone_number
       FROM 
           cases
       JOIN 

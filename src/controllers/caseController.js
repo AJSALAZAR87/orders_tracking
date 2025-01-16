@@ -3,6 +3,9 @@ const logger = require('../utils/logger');
 
 exports.uploadCSV = async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).send('No CSV file attached');
+    }
     logger.info('Received CSV file upload request');
     const insertedCount = await caseService.processCSV(req.file.path);
     res.status(200).json({ message: 'CSV processed successfully', insertedCount });
@@ -29,6 +32,7 @@ exports.getCases = async (req, res) => {
         customerPhoneNumber: caseItem.customer_phone_number,
         customerEmail: caseItem.customer_email,
         customerPostalCode: caseItem.customer_postal_code,
+        status: caseItem.status,
         retailer: {
           id: caseItem.retailer_id,
           name: caseItem.retailer_name,
@@ -42,6 +46,7 @@ exports.getCases = async (req, res) => {
           id: caseItem.courier_id,
           name: caseItem.courier_name,
           address: caseItem.courier_address,
+          phone_number: caseItem.courier_phone_number
         },
         
       };
