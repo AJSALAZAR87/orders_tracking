@@ -4,6 +4,7 @@ const router = express.Router();
 const caseController = require('../controllers/caseController');
 const messagesController = require('../controllers/messagesController');
 const authController = require('../controllers/authController');
+const courierController = require('../controllers/courierController')
 const validateCSV = require('../middlewares/validateCSV');
 const { authenticate } = require('../middlewares/auth')
 
@@ -11,6 +12,7 @@ const { authenticate } = require('../middlewares/auth')
 //LOGIN
 router.post('/signup', [
   body('name').notEmpty().withMessage('Name is required'),
+  body('role').notEmpty().withMessage('Role is required'),
   body('last_name').notEmpty().withMessage('Last_name is required'),
   body('email').isEmail().withMessage('Invalid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
@@ -53,5 +55,16 @@ router.put('/messages/:messageId', authenticate, messagesController.updateMessag
 //DELETE
 router.delete('/messages/:messageId', authenticate, messagesController.deleteMessage);
 
+//COURIERS ROUTES
+//GET
+router.get('/couriers', authenticate, courierController.getAllCouriers);
+//GET BY ID
+router.get('/couriers/:id', authenticate, courierController.getCouriersById); 
+//POST
+router.post('/couriers', authenticate, courierController.insertCourier);
+//PUT
+router.put('/couriers/:id', authenticate, courierController.updateCourier);
+//DELETE
+router.delete('/couriers/:id', authenticate, courierController.deleteCourier);
 
 module.exports = router;

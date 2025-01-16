@@ -3,10 +3,10 @@ const logger = require('../utils/logger');
 
 const insertUser = async (data) => {
   try {
-    const query = `INSERT INTO public.users (name, last_name, email, password) 
-    VALUES ($1, $2, $3, $4)
-    RETURNING id, email, name, last_name, created_at`;
-    const values = [data.name, data.last_name, data.email, data.password];
+    const query = `INSERT INTO public.users (name, last_name, email, password, role) 
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id, email, name, last_name, created_at, role`;
+    const values = [data.name, data.last_name, data.email, data.password, data.role];
     const result = await pool.query(query, values);
     return result.rows[0];
   } catch (error) {
@@ -27,7 +27,7 @@ const getUsers = async (req) => {
     const countResult = await pool.query(countQuery);
     const totalUsers = parseInt(countResult.rows[0].count);
 
-    const query = `SELECT id, name, last_name, email, status, created_at FROM public.users
+    const query = `SELECT id, name, last_name, email, status, role, created_at FROM public.users
     ORDER BY id ${sort}
     LIMIT $1 OFFSET $2;`;
 
@@ -56,7 +56,7 @@ const getUsers = async (req) => {
 
 const getUserById = async (id) => {
   try {
-    const query = `SELECT id, name, last_name, email, created_at, status FROM public.users
+    const query = `SELECT id, name, last_name, email, created_at, status, role FROM public.users
     WHERE id = $1
     ORDER BY id ASC`;
     const result = await pool.query(query, [id]);
