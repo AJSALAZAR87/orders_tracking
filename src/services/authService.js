@@ -6,7 +6,7 @@ const logger = require('../utils/logger');
 
 const signUp = async (userData) => {
   try {
-    const { name, last_name, email, password } = userData;
+    const { name, last_name, email, password, role } = userData;
 
     // Check if the user already exists
     const existingUser = await usersRepository.findByEmailRepository(email);
@@ -22,6 +22,7 @@ const signUp = async (userData) => {
         name,
         last_name,
         email,
+        role,
         password: hashedPassword,
     });
 

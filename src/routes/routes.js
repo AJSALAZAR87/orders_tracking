@@ -11,6 +11,7 @@ const { authenticate } = require('../middlewares/auth')
 //LOGIN
 router.post('/signup', [
   body('name').notEmpty().withMessage('Name is required'),
+  body('role').notEmpty().withMessage('Role is required'),
   body('last_name').notEmpty().withMessage('Last_name is required'),
   body('email').isEmail().withMessage('Invalid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
