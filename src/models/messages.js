@@ -106,7 +106,7 @@ const createMessage = async (messageData) => {
       RETURNING *
     `;
     const result = await pool.query(query, [case_id, message_text, sender]);
-    return result.rows[0]; // Devuelve el mensaje creado
+    return result.rows[0];
   } catch (err) {
     logger.error(`Error in createMessage, creating message: ${err.message}`);
     throw new Error(`Error creating message: ${err.message}`);

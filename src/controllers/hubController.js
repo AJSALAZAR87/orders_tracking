@@ -1,4 +1,5 @@
 const hubService = require('../services/hubService');
+const { validationResult } = require('express-validator');
 
 const getAllHubs = async (req, res) => {
   try {
@@ -30,6 +31,8 @@ const getHubsById = async (req, res) => {
 const insertHub = async (req, res) => {
   const hubData = req.body;
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     const newHub = await hubService.insertHub(hubData);
     res.status(201).json(newHub); 
   } catch (err) {
