@@ -63,7 +63,9 @@ router.get('/couriers', authenticate, courierController.getAllCouriers);
 //GET BY ID
 router.get('/couriers/:id', authenticate, courierController.getCouriersById); 
 //POST
-router.post('/couriers', authenticate, courierController.insertCourier);
+router.post('/couriers',
+  [ body('name').notEmpty().withMessage('Field name is required') ], 
+  authenticate, courierController.insertCourier);
 //PUT
 router.put('/couriers/:id', authenticate, courierController.updateCourier);
 //DELETE
@@ -75,7 +77,9 @@ router.get('/retailers', authenticate, retailerController.getAllRetailers);
 //GET BY ID
 router.get('/retailers/:id', authenticate, retailerController.getRetailersById); 
 //POST
-router.post('/retailers', authenticate, retailerController.insertRetailer);
+router.post('/retailers', 
+  [ body('name').notEmpty().withMessage('Field name is required') ],
+  authenticate, retailerController.insertRetailer);
 //PUT
 router.put('/retailers/:id', authenticate, retailerController.updateRetailer);
 //DELETE
@@ -87,7 +91,9 @@ router.get('/hubs', authenticate, hubController.getAllHubs);
 //GET BY ID
 router.get('/hubs/:id', authenticate, hubController.getHubsById); 
 //POST
-router.post('/hubs', authenticate, hubController.insertHub);
+router.post('/hubs',
+  [ body('name').notEmpty().withMessage('Field name is required') ],
+  authenticate, hubController.insertHub);
 //PUT
 router.put('/hubs/:id', authenticate, hubController.updateHub);
 //DELETE
