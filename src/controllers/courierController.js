@@ -1,5 +1,6 @@
 const courierService = require('../services/courierService');
 
+
 const getAllCouriers = async (req, res) => {
   try {
       const couriers = await courierService.getAllCouriers();

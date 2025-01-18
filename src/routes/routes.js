@@ -4,7 +4,9 @@ const router = express.Router();
 const caseController = require('../controllers/caseController');
 const messagesController = require('../controllers/messagesController');
 const authController = require('../controllers/authController');
-const courierController = require('../controllers/courierController')
+const courierController = require('../controllers/courierController');
+const retailerController = require('../controllers/retailerController');
+const hubController = require('../controllers/hubController');
 const validateCSV = require('../middlewares/validateCSV');
 const { authenticate } = require('../middlewares/auth')
 
@@ -61,10 +63,40 @@ router.get('/couriers', authenticate, courierController.getAllCouriers);
 //GET BY ID
 router.get('/couriers/:id', authenticate, courierController.getCouriersById); 
 //POST
-router.post('/couriers', authenticate, courierController.insertCourier);
+router.post('/couriers',
+  [ body('name').notEmpty().withMessage('Field name is required') ], 
+  authenticate, courierController.insertCourier);
 //PUT
 router.put('/couriers/:id', authenticate, courierController.updateCourier);
 //DELETE
 router.delete('/couriers/:id', authenticate, courierController.deleteCourier);
+
+//RETAILERS ROUTES
+//GET
+router.get('/retailers', authenticate, retailerController.getAllRetailers);
+//GET BY ID
+router.get('/retailers/:id', authenticate, retailerController.getRetailersById); 
+//POST
+router.post('/retailers', 
+  [ body('name').notEmpty().withMessage('Field name is required') ],
+  authenticate, retailerController.insertRetailer);
+//PUT
+router.put('/retailers/:id', authenticate, retailerController.updateRetailer);
+//DELETE
+router.delete('/retailers/:id', authenticate, retailerController.deleteRetailer);
+
+//HUBS ROUTES
+//GET
+router.get('/hubs', authenticate, hubController.getAllHubs);
+//GET BY ID
+router.get('/hubs/:id', authenticate, hubController.getHubsById); 
+//POST
+router.post('/hubs',
+  [ body('name').notEmpty().withMessage('Field name is required') ],
+  authenticate, hubController.insertHub);
+//PUT
+router.put('/hubs/:id', authenticate, hubController.updateHub);
+//DELETE
+router.delete('/hubs/:id', authenticate, hubController.deleteHub);
 
 module.exports = router;
