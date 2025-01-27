@@ -19,20 +19,38 @@ const getUsers = async (req) => {
   try {
     const page = parseInt(req.query.page) || 1;  
     const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || '';
     if (limit > 100) limit = 100; 
     if (page < 1) page = 1;
     const offset = (page - 1) * limit;
     const sort = req.query.sort || 'ASC';
-    const countQuery = `SELECT COUNT(*) FROM public.users`;
-    const countResult = await pool.query(countQuery);
-    const totalUsers = parseInt(countResult.rows[0].count);
 
-    const query = `SELECT id, name, last_name, email, status, role, created_at FROM public.users
-    ORDER BY id ${sort}
-    LIMIT $1 OFFSET $2;`;
 
-    const result = await pool.query(query, [limit, offset]);
-    logger.info(`Retrieved ${result.rows.length} cases`);
+    let countQuery = 'SELECT COUNT(*) FROM public.users';
+    let query = `SELECT id, name, last_name, email, status, role, created_at FROM public.users `;
+    const queryParams = [];
+    let countResult;
+    let totalUsers;
+
+    if (search) {
+      countQuery += ` WHERE name ILIKE $1 OR last_name ILIKE $1`;
+      query += ` WHERE name ILIKE $1 OR last_name ILIKE $1`;
+      queryParams.push(`%${search}%`);
+      query += ` ORDER BY id ${sort} LIMIT $2 OFFSET $3`;
+      queryParams.push(limit, offset);
+      countResult = await pool.query(countQuery, [queryParams[0]]);
+      
+    } else {
+      query += ` ORDER BY id ${sort} LIMIT $1 OFFSET $2`;
+      queryParams.push(limit, offset);
+      countResult = await pool.query(countQuery);
+
+    }
+
+    totalUsers = parseInt(countResult.rows[0].count);
+
+    const result = await pool.query(query, queryParams);
+    logger.info(`Retrieved ${result.rows.length} users`);
     
     const totalPages = Math.ceil(totalUsers / limit);
     const pagination = {
