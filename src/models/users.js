@@ -56,7 +56,6 @@ const getUsers = async (req) => {
     query += ` ORDER BY id ${sort} LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
     queryParams.push(limit, offset);
 
-    console.log('Query:  ', query, 'count query: ', countQuery, "values:  ", queryParams)
     countResult = await pool.query(countQuery, queryParams.slice(0, queryParams.length - 2));
     totalUsers = parseInt(countResult.rows[0].count);
 

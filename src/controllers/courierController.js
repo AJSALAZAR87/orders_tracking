@@ -3,9 +3,10 @@ const courierService = require('../services/courierService');
 
 const getAllCouriers = async (req, res) => {
   try {
-      const couriers = await courierService.getAllCouriers();
+      const couriers = await courierService.getAllCouriers(req);
       res.status(200).json({
-        data: couriers
+        data: couriers.data,
+        pagination: couriers.pagination,
       });
     
   } catch (err) {

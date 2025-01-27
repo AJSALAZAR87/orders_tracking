@@ -1,7 +1,7 @@
 const courierModel = require('../models/courier');
 
-const getAllCouriers = async () => {
-  return await courierModel.getAllCouriers();
+const getAllCouriers = async (req) => {
+  return await courierModel.getAllCouriers(req);
 }
 
 const getCouriersById = async (caseId) => {

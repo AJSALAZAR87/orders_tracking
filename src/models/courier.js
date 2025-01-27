@@ -1,9 +1,22 @@
 const pool = require('../config/database');
 const logger = require('../utils/logger');
 
-const getAllCouriers = async () => {
+const getAllCouriers = async (req) => {
   try {
-    const query = `
+    const page = parseInt(req.query.page) || 1;  
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || '';
+    let status = req.query.status || '';
+
+    status = (status === 'activo' ? true : status ==='inactivo' ? false : null);
+
+    if (limit > 100) limit = 100; 
+    if (page < 1) page = 1;
+    const offset = (page - 1) * limit;
+    const sort = req.query.sort || 'ASC';
+
+    let countQuery = 'SELECT COUNT(*) FROM public.couriers';
+    let query1 = `
       SELECT 
         c.id AS courier_id,
         c.name AS courier_name,
@@ -32,11 +45,55 @@ const getAllCouriers = async () => {
           couriers c
       LEFT JOIN 
           cases ca ON ca.courier_id = c.id
-      GROUP BY 
-          c.id;
     `;
-    const result = await pool.query(query);
-    return result.rows;
+    const queryParams = [];
+    let countResult;
+    let totalCouriers;
+
+    if(search) {
+      countQuery += ` WHERE (name ILIKE $${queryParams.length + 1} OR email ILIKE $${queryParams.length + 1})`;
+      query1 += ` WHERE (c.name ILIKE $${queryParams.length + 1} OR c.email ILIKE $${queryParams.length + 1})`;
+      queryParams.push(`%${search}%`);
+    }
+
+    if(status !== null) {
+      if (queryParams.length > 0) {
+        countQuery += ` AND status = $${queryParams.length + 1}`;
+        query1 += ` AND c.status = $${queryParams.length + 1}`;
+      } else {
+        countQuery += ` WHERE status = $${queryParams.length + 1}`;
+        query1 += ` WHERE c.status = $${queryParams.length + 1}`;
+      }
+      queryParams.push(status); 
+    }
+
+    query1 += ` GROUP BY c.id, c.name, c.address, c.phone_number, c.email, c.vehicle_type, 
+                c.status, c.created_at, c.updated_at
+                ORDER BY c.id ${sort} 
+                LIMIT $${queryParams.length + 1} 
+                OFFSET $${queryParams.length + 2} 
+                ;`;
+    queryParams.push(limit, offset);
+
+    countResult = await pool.query(countQuery, queryParams.slice(0, queryParams.length - 2));
+    totalCouriers = parseInt(countResult.rows[0].count);
+
+    const result = await pool.query(query1, queryParams);
+    logger.info(`Retrieved ${result.rows.length} couriers`);
+    
+    const totalPages = Math.ceil(totalCouriers / limit);
+    const pagination = {
+      totalItems: totalCouriers,
+      totalPages: totalPages,
+      currentPage: page,
+      pageSize: limit,
+    };
+
+    const result2 = {
+      data: result.rows,
+      pagination
+    }
+    return result2;
   } catch (err) {
     logger.error(`Error in getAllCouriers, retrieving couriers: ${err.message}`);
     throw new Error(`Error retrieving all couriers: ${err.message}`);
