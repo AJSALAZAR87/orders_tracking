@@ -1,9 +1,9 @@
 const hubsRepository = require('../repositories/hubRepository');
 const logger = require('../utils/logger');
 
-const getAllHubs = async () => {
+const getAllHubs = async (req) => {
   try {
-    const hubs = await hubsRepository.getAllHubs();
+    const hubs = await hubsRepository.getAllHubs(req);
     return hubs;
   } catch (err) {
     logger.error(`Error in service getAllHubs: ${err.message}`);
