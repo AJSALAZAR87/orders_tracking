@@ -1,7 +1,7 @@
 const hubModel = require('../models/hub');
 
-const getAllHubs = async () => {
-  return await hubModel.getAllHubs();
+const getAllHubs = async (req) => {
+  return await hubModel.getAllHubs(req);
 }
 
 const getHubsById = async (caseId) => {

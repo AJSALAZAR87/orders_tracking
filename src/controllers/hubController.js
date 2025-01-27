@@ -3,9 +3,10 @@ const { validationResult } = require('express-validator');
 
 const getAllHubs = async (req, res) => {
   try {
-      const hubs = await hubService.getAllHubs();
+      const hubs = await hubService.getAllHubs(req);
       res.status(200).json({
-        data: hubs
+        data: hubs.data,
+        pagination: hubs.pagination
       });
     
   } catch (err) {

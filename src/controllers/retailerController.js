@@ -2,9 +2,10 @@ const retailerService = require('../services/retailerService');
 
 const getAllRetailers = async (req, res) => {
   try {
-      const retailers = await retailerService.getAllRetailers();
+      const retailers = await retailerService.getAllRetailers(req);
       res.status(200).json({
-        data: retailers
+        data: retailers.data,
+        pagination: retailers.pagination
       });
     
   } catch (err) {

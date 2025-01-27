@@ -1,9 +1,9 @@
 const couriersRepository = require('../repositories/courierRepository');
 const logger = require('../utils/logger');
 
-const getAllCouriers = async () => {
+const getAllCouriers = async (req) => {
   try {
-    const couriers = await couriersRepository.getAllCouriers();
+    const couriers = await couriersRepository.getAllCouriers(req);
     return couriers;
   } catch (err) {
     logger.error(`Error in service getAllCouriers: ${err.message}`);

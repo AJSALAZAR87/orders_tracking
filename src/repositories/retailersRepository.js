@@ -1,7 +1,7 @@
 const retailerModel = require('../models/retailer');
 
-const getAllRetailers = async () => {
-  return await retailerModel.getAllRetailers();
+const getAllRetailers = async (req) => {
+  return await retailerModel.getAllRetailers(req);
 }
 
 const getRetailersById = async (caseId) => {

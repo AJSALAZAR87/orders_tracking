@@ -1,9 +1,9 @@
 const retailersRepository = require('../repositories/retailersRepository');
 const logger = require('../utils/logger');
 
-const getAllRetailers = async () => {
+const getAllRetailers = async (req) => {
   try {
-    const retailers = await retailersRepository.getAllRetailers();
+    const retailers = await retailersRepository.getAllRetailers(req);
     return retailers;
   } catch (err) {
     logger.error(`Error in service getAllRetailers: ${err.message}`);
