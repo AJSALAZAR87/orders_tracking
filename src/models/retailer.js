@@ -126,7 +126,7 @@ const getRetailerById = async (Id) => {
           r.id;
     `;
     const result = await pool.query(query, [Id]);
-    return result.rows;
+    return result.rows[0];
   } catch (err) {
     logger.error(`Error in getRetailerById: ${err.message}`);
     throw new Error(`Error retrieving retailer by id ${Id}: ${err.message}`);

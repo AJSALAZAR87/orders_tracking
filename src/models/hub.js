@@ -134,7 +134,7 @@ const getHubById = async (Id) => {
           h.id;
     `;
     const result = await pool.query(query, [Id]);
-    return result.rows;
+    return result.rows[0];
   } catch (err) {
     logger.error(`Error in getHubById: ${err.message}`);
     throw new Error(`Error retrieving hub by id ${Id}: ${err.message}`);
