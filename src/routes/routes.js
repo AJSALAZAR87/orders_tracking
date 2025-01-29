@@ -7,10 +7,11 @@ const authController = require('../controllers/authController');
 const courierController = require('../controllers/courierController');
 const retailerController = require('../controllers/retailerController');
 const hubController = require('../controllers/hubController');
+const stateController = require('../controllers/statesController');
 const validateCSV = require('../middlewares/validateCSV');
 const { authenticate } = require('../middlewares/auth')
 
-//AUTH ROUTES
+//  AUTH ROUTES
 //LOGIN
 router.post('/signup', [
   body('name').notEmpty().withMessage('Name is required'),
@@ -35,7 +36,7 @@ router.get('/users', authenticate, authController.getUsers);
 //GET USER BY ID
 router.get('/users/:userId', authenticate, authController.getUserById);
 
-//CASES ROUTES
+//  CASES ROUTES
 //GET
 router.get('/cases', authenticate, caseController.getCases);
 //POST
@@ -45,7 +46,7 @@ router.patch('/cases/:id', authenticate, caseController.updateCase);
 //DELETE
 router.delete('/cases/:id', authenticate, caseController.deleteCase);
 
-//MESSAGES ROUTES
+//  MESSAGES ROUTES
 //GET
 router.get('/messages', authenticate, messagesController.getAllMessages);
 //GET BY ID
@@ -57,7 +58,7 @@ router.put('/messages/:messageId', authenticate, messagesController.updateMessag
 //DELETE
 router.delete('/messages/:messageId', authenticate, messagesController.deleteMessage);
 
-//COURIERS ROUTES
+//  COURIERS ROUTES
 //GET
 router.get('/couriers', authenticate, courierController.getAllCouriers);
 //GET BY ID
@@ -71,7 +72,7 @@ router.put('/couriers/:id', authenticate, courierController.updateCourier);
 //DELETE
 router.delete('/couriers/:id', authenticate, courierController.deleteCourier);
 
-//RETAILERS ROUTES
+//  RETAILERS ROUTES
 //GET
 router.get('/retailers', authenticate, retailerController.getAllRetailers);
 //GET BY ID
@@ -85,7 +86,7 @@ router.put('/retailers/:id', authenticate, retailerController.updateRetailer);
 //DELETE
 router.delete('/retailers/:id', authenticate, retailerController.deleteRetailer);
 
-//HUBS ROUTES
+//  HUBS ROUTES
 //GET
 router.get('/hubs', authenticate, hubController.getAllHubs);
 //GET BY ID
@@ -98,5 +99,8 @@ router.post('/hubs',
 router.put('/hubs/:id', authenticate, hubController.updateHub);
 //DELETE
 router.delete('/hubs/:id', authenticate, hubController.deleteHub);
+
+// STATES ROUTES
+router.get('/states', authenticate, stateController.getAllStates);
 
 module.exports = router;
