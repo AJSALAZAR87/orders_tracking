@@ -17,7 +17,6 @@ const getRetailersById = async (req, res) => {
   const { id } = req.params;
   try {
     const retailer = await retailerService.getRetailersById(id);
-    console.log('Retailer by id', id, retailer)
     if (retailer.length === 0) {
       return res.status(404).json({ error: 'No retailer found' });
     }
