@@ -22,7 +22,15 @@ const getAllRetailers = async (req) => {
         r.email AS retailer_email,
         r.contact_name AS retailer_contact_name,
         r.city AS retailer_city,
-        r.state AS retailer_state,
+        CASE 
+          WHEN m.id IS NOT NULL THEN
+              json_build_object(
+                  'id', m.id, 
+                  'name', m.name
+              )
+          ELSE
+              '{}'::json
+        END AS retailer_state,
         r.website_url AS retailer_website_url,
         r.created_at AS retailer_created_at,
         r.updated_at AS retailer_updated_at,
@@ -44,6 +52,8 @@ const getAllRetailers = async (req) => {
           retailers r
       LEFT JOIN 
           cases ca ON ca.retailer_id = r.id
+      LEFT JOIN
+          mx_states m ON r.state_id = m.id
     `;
 
     const queryParams = [];
@@ -56,12 +66,14 @@ const getAllRetailers = async (req) => {
       queryParams.push(`%${search}%`);
     }
 
-    query1 += ` GROUP BY r.id 
+    query1 += ` GROUP BY r.id, m.name, m.id
                 ORDER BY r.id ${sort} 
                 LIMIT $${queryParams.length + 1} 
                 OFFSET $${queryParams.length + 2} 
                 ;`;
     queryParams.push(limit, offset);
+
+    logger.info('Query:  ', query1);
 
     countResult = await pool.query(countQuery, queryParams.slice(0, queryParams.length - 2));
     total = parseInt(countResult.rows[0].count);
@@ -99,7 +111,15 @@ const getRetailerById = async (Id) => {
         r.email AS retailer_email,
         r.contact_name AS retailer_contact_name,
         r.city AS retailer_city,
-        r.state AS retailer_state,
+        CASE 
+          WHEN m.id IS NOT NULL THEN
+              json_build_object(
+                  'id', m.id, 
+                  'name', m.name
+              )
+          ELSE
+              '{}'::json 
+        END AS retailer_state,
         r.website_url AS retailer_website_url,
         r.created_at AS retailer_created_at,
         r.updated_at AS retailer_updated_at,
@@ -121,12 +141,14 @@ const getRetailerById = async (Id) => {
           retailers r
       LEFT JOIN 
           cases ca ON ca.retailer_id = r.id
+      LEFT JOIN
+          mx_states m ON m.id = r.state_id
       WHERE r.id = $1
       GROUP BY 
-          r.id;
+          r.id, r.city ,m.id;
     `;
     const result = await pool.query(query, [Id]);
-    return result.rows;
+    return result.rows[0];
   } catch (err) {
     logger.error(`Error in getRetailerById: ${err.message}`);
     throw new Error(`Error retrieving retailer by id ${Id}: ${err.message}`);
@@ -142,12 +164,12 @@ const insertRetailer = async (retailerData) => {
       email,
       contact_name,
       city,
-      state,
+      state_id,
       website_url,
     } = retailerData;
 
     const query = `
-      INSERT INTO public.retailers (name, address, phone_number, email, contact_name, city, state, website_url)
+      INSERT INTO public.retailers (name, address, phone_number, email, contact_name, city, state_id, website_url)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *;
     `;
@@ -158,7 +180,7 @@ const insertRetailer = async (retailerData) => {
       email || null,
       contact_name || null,
       city || null,
-      state || null,
+      state_id || null,
       website_url || null,
     ];
     const result = await pool.query(query, queryValues);

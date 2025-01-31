@@ -21,9 +21,7 @@ const getHubsById = async (req, res) => {
     if (hub.length === 0) {
       return res.status(404).json({ error: 'No hub found' });
     }
-    res.status(200).json({
-      data: hub
-    });
+    res.status(200).json(hub);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

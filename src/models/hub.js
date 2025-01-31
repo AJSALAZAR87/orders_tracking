@@ -25,8 +25,16 @@ const getAllHubs = async (req) => {
         h.contact_phone AS hub_contact_phone,
         h.contact_email AS hub_contact_email,
         h.hub_type AS hub_type,
+        CASE 
+          WHEN m.id IS NOT NULL THEN
+              json_build_object(
+                  'id', m.id, 
+                  'name', m.name
+              )
+          ELSE
+              '{}'::json 
+        END AS hub_state,
         h.city AS hub_city,
-        h.state AS hub_state,
         h.status AS hub_status,
         h.created_at AS hub_created_at,
         h.updated_at AS hub_updated_at,
@@ -44,6 +52,8 @@ const getAllHubs = async (req) => {
           hubs h
       LEFT JOIN 
           cases ca ON ca.hub_id = h.id
+      LEFT JOIN
+          mx_states m ON m.id = h.state_id
     `;
     const queryParams = [];
     let countResult;
@@ -67,7 +77,7 @@ const getAllHubs = async (req) => {
     }
 
     query1 += ` GROUP BY h.id, h.name, h.address, h.contact_name, h.contact_phone, h.contact_email, 
-                h.hub_type, h.city, h.state, h.status, h.created_at, h.updated_at
+                h.hub_type, h.state_id, h.city, h.status, h.created_at, h.updated_at, m.id
                 ORDER BY h.id ${sort} 
                 LIMIT $${queryParams.length + 1} 
                 OFFSET $${queryParams.length + 2} 
@@ -111,7 +121,15 @@ const getHubById = async (Id) => {
         h.contact_email AS hub_contact_email,
         h.hub_type AS hub_type,
         h.city AS hub_city,
-        h.state AS hub_state,
+        CASE 
+          WHEN m.id IS NOT NULL THEN
+              json_build_object(
+                  'id', m.id, 
+                  'name', m.name
+              )
+          ELSE
+              '{}'::json 
+        END AS hub_state,
         h.status AS hub_status,
         h.created_at AS hub_created_at,
         h.updated_at AS hub_updated_at,
@@ -129,12 +147,14 @@ const getHubById = async (Id) => {
           hubs h
       LEFT JOIN 
           cases ca ON ca.hub_id = h.id
+      LEFT JOIN
+          mx_states m ON m.id = h.state_id
       WHERE h.id = $1
       GROUP BY 
-          h.id;
+          h.id, m.id;
     `;
     const result = await pool.query(query, [Id]);
-    return result.rows;
+    return result.rows[0];
   } catch (err) {
     logger.error(`Error in getHubById: ${err.message}`);
     throw new Error(`Error retrieving hub by id ${Id}: ${err.message}`);
@@ -151,12 +171,12 @@ const insertHub = async (hubData) => {
       contact_email,
       hub_type,
       city,
-      state,
+      state_id,
       status = true,
     } = hubData;
 
     const query = `
-      INSERT INTO public.hubs (name, address, contact_name, contact_phone, contact_email, hub_type, city, state, status)
+      INSERT INTO public.hubs (name, address, contact_name, contact_phone, contact_email, hub_type, city, state_id, status)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *;
     `;
@@ -168,7 +188,7 @@ const insertHub = async (hubData) => {
       contact_email || null,
       hub_type || null,
       city || null,
-      state || null,
+      state_id || null,
       status,
     ];
     const result = await pool.query(query, queryValues);

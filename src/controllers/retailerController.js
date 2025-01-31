@@ -20,9 +20,7 @@ const getRetailersById = async (req, res) => {
     if (retailer.length === 0) {
       return res.status(404).json({ error: 'No retailer found' });
     }
-    res.status(200).json({
-      data: retailer
-    });
+    res.status(200).json(retailer);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

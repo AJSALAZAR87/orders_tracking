@@ -21,9 +21,7 @@ const getCouriersById = async (req, res) => {
     if (courier.length === 0) {
       return res.status(404).json({ error: 'No courier found' });
     }
-    res.status(200).json({
-      data: courier
-    });
+    res.status(200).json(courier);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

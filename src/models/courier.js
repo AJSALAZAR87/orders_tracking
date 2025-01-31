@@ -136,7 +136,7 @@ const getCourierById = async (Id) => {
           c.id;
     `;
     const result = await pool.query(query, [Id]);
-    return result.rows;
+    return result.rows[0];
   } catch (err) {
     logger.error(`Error in getCourierById: ${err.message}`);
     throw new Error(`Error retrieving courier by id ${Id}: ${err.message}`);
